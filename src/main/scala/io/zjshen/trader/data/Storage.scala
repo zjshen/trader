@@ -218,9 +218,3 @@ class SqliteStorage extends Storage {
     DriverManager.getConnection(s"jdbc:sqlite:${dbPath}")
   }
 }
-
-
-object TestStorage extends App {
-  val storage = new SqliteStorage
-  storage.getStockHistoricalPrices("XOM", new DateTime(2017, 1, 10, 0, 0)).foreach(println(_))
-}
