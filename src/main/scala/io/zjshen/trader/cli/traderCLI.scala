@@ -1,7 +1,7 @@
 package io.zjshen.trader.cli
 
 import com.google.inject.Guice
-import io.zjshen.trader.analysis.recommendSP500Tickers
+import io.zjshen.trader.analysis.{StockMetrics, recommendSP500Tickers}
 import io.zjshen.trader.{TraderContext, traderModule}
 import io.zjshen.trader.data.loadSP500Data
 import org.joda.time.DateTime
@@ -14,9 +14,18 @@ object traderCli {
   lazy implicit val context = TraderContext(Guice.createInjector(traderModule))
 
   def main(argv: Array[String]): Unit = {
-    def printRecommendations(recommendations: List[(String, Double)]): Unit = {
+    def printRecommendations(recommendations: List[(String, StockMetrics)]): Unit = {
       println("Following tickers have beated S&P 500 index:")
-      recommendations.foreach(tuple => println(s"Ticker: ${tuple._1}, Gain: ${(tuple._2 * 100).formatted("%.2f")}%"))
+      recommendations.foreach(tuple =>
+        println(
+          s"""
+             |Ticker: ${tuple._1},
+             |Gain: ${(tuple._2.gain * 100).formatted("%.2f")}%,
+             |Low: ${(tuple._2.low * 100).formatted("%.2f")}%,
+             |High: ${(tuple._2.high * 100).formatted("%.2f")}%
+             |D2D Increase Total: ${(tuple._2.d2dIncrease * 100).formatted("%.2f")}%
+             |D2D Decrease Total: ${(tuple._2.d2dDecrease * 100).formatted("%.2f")}%
+           """.stripMargin.trim.replaceAll("[\r\n]+", "\t")))
     }
 
     val parser = new OptionParser[TraderCliConfig]("trader") {
