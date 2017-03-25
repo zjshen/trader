@@ -4,6 +4,7 @@ package io.zjshen.trader.data
 
 import java.sql.{Connection, DriverManager, SQLException, Statement}
 
+import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.LazyLogging
 import io.zjshen.trader.exception.TraderException
 import io.zjshen.trader.util._
@@ -13,9 +14,10 @@ import scala.collection.mutable
 
 
 trait Storage extends LazyLogging {
-  private val batchSize = 100
-  private val portfolioTableName = "portfolio"
-  private val stockHistoricalPricesTableName = "stock_historical_prices"
+  protected val config = ConfigFactory.load
+  private val batchSize = config.getInt("storage.insert-batch-size")
+  private val portfolioTableName = config.getString("storage.portfolio-table")
+  private val stockHistoricalPricesTableName = config.getString("storage.stock-historical-prices-table")
 
   protected def getConnection: Connection
 
@@ -212,7 +214,7 @@ trait Storage extends LazyLogging {
 
 class SqliteStorage extends Storage {
   Class.forName("org.sqlite.JDBC")
-  private val dbPath = "/tmp/trader.db"
+  private val dbPath = config.getString("storage.sqlite.path")
 
   override def getConnection: Connection = {
     DriverManager.getConnection(s"jdbc:sqlite:${dbPath}")

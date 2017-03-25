@@ -9,9 +9,9 @@ import org.joda.time.format.DateTimeFormat
 import scopt.OptionParser
 
 
-object traderCli {
+object traderCLI {
   private val formatter = DateTimeFormat.forPattern("yyyy-MM-dd")
-  lazy implicit val context = TraderContext(Guice.createInjector(traderModule))
+  private implicit val context = TraderContext(Guice.createInjector(traderModule))
 
   def main(argv: Array[String]): Unit = {
     def printRecommendations(recommendations: List[(String, StockMetrics)]): Unit = {

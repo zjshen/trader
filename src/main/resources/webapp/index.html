@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <script src="https://unpkg.com/react@latest/dist/react.js"></script>
+    <script src="https://unpkg.com/react-dom@latest/dist/react-dom.js"></script>
+    <script src="https://unpkg.com/babel-standalone@latest/babel.min.js"></script>
+    <script src="https://npmcdn.com/react-bootstrap-table/dist/react-bootstrap-table.min.js"></script>
+    <link rel="stylesheet" href="https://npmcdn.com/react-bootstrap-table/dist/react-bootstrap-table-all.min.css">
+    <link rel="stylesheet" href="https://allenfang.github.io/react-bootstrap-table/css/bootstrap.css">
+    <link rel="stylesheet" href="https://allenfang.github.io/react-bootstrap-table/css/style.css">
+</head>
+<body>
+<div id="table"></div>
+<script type="text/babel">
+function getParameters() {
+    var parameters = new Map();
+    location
+        .search
+        .substring(1)
+        .split('&')
+        .filter(kv => kv != '')
+        .forEach(kv => {
+            var kvPair = kv.split('=');
+            parameters[kvPair[0]] = kvPair[1];
+        })
+    return parameters;
+}
+
+var parameters = getParameters();
+var today = new Date();
+var start = parameters['start'] ?
+    parameters['start'] :
+    new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+var end = parameters['end'] ?
+    parameters['start'] :
+    new Date(today.getFullYear(), today.getMonth(), today.getDate() - 1).toISOString().split('T')[0];
+var url = 'api/recommendation/sp500/'.concat(start).concat('/').concat(end).concat('/');
+fetch(url)
+    .then((response) => response.json())
+    .then((responseJson) => {
+        ReactDOM.render(
+            <BootstrapTable data={ responseJson.items } striped hover>
+                <TableHeaderColumn width='150' dataField='ticker' isKey dataSort>Ticker</TableHeaderColumn>
+                <TableHeaderColumn width='150' dataField='gain' dataSort>Gain</TableHeaderColumn>
+                <TableHeaderColumn width='150' dataField='low' dataSort>Low</TableHeaderColumn>
+                <TableHeaderColumn width='150' dataField='high' dataSort>High</TableHeaderColumn>
+                <TableHeaderColumn width='150' dataField='d2dIncrease' dataSort>D2D Increase</TableHeaderColumn>
+                <TableHeaderColumn width='150' dataField='d2dDecrease' dataSort>D2D Decrease</TableHeaderColumn>
+            </BootstrapTable>,
+            document.getElementById('table')
+        );
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+</script>
+</body>
+</html>

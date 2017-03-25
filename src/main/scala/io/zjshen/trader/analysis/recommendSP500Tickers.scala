@@ -86,7 +86,7 @@ case class StockMetrics(gain: Double,
                         high: Double,
                         d2dIncrease: Double,
                         d2dDecrease: Double) extends Ordered[StockMetrics] {
-  private val aggressiveness = 0.5
+  private val aggressiveness = 0.8
 
   override def compare(that: StockMetrics):Int = -score.compare(that.score)
 

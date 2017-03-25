@@ -13,9 +13,10 @@ object pullStockHistoricalPrice extends LazyLogging {
 
   def apply(ticker: String, start: DateTime, end: DateTime): List[StockHistoricalPrice] = {
     // Month index starts from 0
+    // Yahoo finance use - instead . in ticker
     val url =
       s"""
-         |http://chart.finance.yahoo.com/table.csv?s=${ticker}
+         |http://chart.finance.yahoo.com/table.csv?s=${ticker.replace(".", "-")}
          |&a=${start.getMonthOfYear - 1}&b=${start.getDayOfMonth}&c=${start.getYear}
          |&d=${end.getMonthOfYear - 1}&e=${end.getDayOfMonth}&f=${end.getYear}&g=d&ignore=.csv
       """.stripMargin.trim.replaceAll("[\r\n]+", "")
